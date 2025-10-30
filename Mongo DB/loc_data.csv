@@ -1,0 +1,11 @@
+,id,geography,severity,population,nodal_center,alert_status,nc_category,city_id,disaster_status,cctv,coordinates
+0,1,Kolkata 1,L,64186,Park Street,N,first-aid,1,0,1,"22.586947, 88.354413"
+1,2,Kolkata 2,N,54354,NC 5,N,fire-extinguisher,1,0,2,"22.537768, 88.417351"
+2,3,Kolkata 3,M,65462,NC 3,N,first-aid,1,1,3,"22.578006, 88.422797"
+3,4,Kolkata 4,N,54324,Nodal Center 5,N,first-aid,1,0,4,"22.576516, 88.327584"
+4,5,Kolkata 5,M,67483,NC 3,N,first-aid,1,1,5,"22.586979, 88.38389"
+5,6,Kolkata 6,M,63227,Park Street,N,fire-extinguisher,1,1,6,"22.597697, 88.399906"
+6,7,Kolkata 7,M,68569,NC 3,N,fire-extinguisher,1,0,7,"22.605583, 88.408946"
+7,8,Kolkata 8,L,68772,NC 3,N,first-aid,1,0,8,"22.588398, 88.394092"
+8,9,Kolkata 9,N,66733,NC 3,N,fire-extinguisher,1,1,9,"22.612676, 88.408014"
+9,10,Kolkata 10,N,63313,NC 5,N,first-aid,1,0,10,"22.590683, 88.377063"
