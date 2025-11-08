@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact | Disaster Relief & Rescue System</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+ 
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;font-family:"Poppins",sans-serif;}
+    body{background:linear-gradient(135deg,#001f3f,#004d73);color:#fff;min-height:100vh;display:flex;flex-direction:column;}
+    header{background:rgba(0,0,0,0.3);padding:18px 50px;display:flex;justify-content:space-between;align-items:center;}
+    header h1{color:#00e6ff;font-size:26px;}
+    nav a{text-decoration:none;color:#fff;margin:0 15px;font-weight:500;}
+    nav a:hover,nav a.active{color:#00e6ff;border-bottom:2px solid #00e6ff;}
+    main{text-align:center;padding:60px 20px;flex:1;}
+    h2{color:#00e6ff;font-size:36px;margin-bottom:20px;}
+    .team-section{display:flex;flex-wrap:wrap;justify-content:center;gap:25px;margin-top:30px;}
+    .team-card{background:rgba(255,255,255,0.08);border-radius:16px;padding:25px;width:300px;box-shadow:0 0 20px rgba(0,230,255,0.3);text-align:center;}
+    .team-card img{width:110px;height:110px;border-radius:50%;border:3px solid #00e6ff;object-fit:cover;margin-bottom:15px;}
+    .team-card h3{color:#00e6ff;margin-bottom:8px;}
+    .team-card p{color:#ccc;font-size:14px;margin-bottom:10px;}
+    .team-card a{color:#00e6ff;text-decoration:none;font-size:14px;}
+    footer{text-align:center;padding:18px;background:rgba(0,0,0,0.4);font-size:14px;color:#aaa;margin-top:50px;}
+
+    /* Chatbot */
+    .chatbot-button{position:fixed;bottom:25px;right:25px;background:#00e6ff;color:#001f3f;border:none;border-radius:50%;width:60px;height:60px;font-size:26px;cursor:pointer;box-shadow:0 0 15px rgba(0,230,255,0.6);transition:transform 0.3s;}
+    .chatbot-button:hover{transform:scale(1.1);}
+    .chat-window{display:none;position:fixed;bottom:100px;right:25px;background:rgba(0,31,63,0.95);border:1px solid #00e6ff;border-radius:12px;width:320px;height:400px;box-shadow:0 0 20px rgba(0,230,255,0.4);flex-direction:column;overflow:hidden;}
+    .chat-header{background:#00e6ff;color:#001f3f;padding:12px;font-weight:600;text-align:center;}
+    .chat-messages{flex:1;padding:10px;overflow-y:auto;font-size:14px;}
+    .chat-input{display:flex;border-top:1px solid #00e6ff;}
+    .chat-input input{flex:1;padding:10px;border:none;outline:none;background:rgba(255,255,255,0.1);color:#fff;}
+    .chat-input button{background:#00e6ff;color:#001f3f;border:none;padding:10px 15px;cursor:pointer;font-weight:600;}
+    .bot-message{color:#00ffcc;margin:5px 0;}
+    .user-message{color:#fff;text-align:right;margin:5px 0;}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🌍 Disaster Relief & Rescue System</h1>
+    <nav>
+      <a href="{{ url_for('index') }}">Home</a>
+      <a href="{{ url_for('about') }}">About</a>
+      <a href="{{ url_for('contact') }}" class="active">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <h2>Meet Our Team</h2>
+    <p>We are passionate developers building AI solutions for safer communities.</p>
+
+    <div class="team-section">
+      <div class="team-card">
+        <img src="{{ url_for('static', filename='images/shristi.jpg') }}" alt="Shristi Rajpoot">
+        <h3>Shristi Rajpoot</h3>
+       
+        <p><i class="fa-solid fa-envelope"></i> shristirajpoot369@gmail.com</p>
+       
+      </div>
+
+      <div class="team-card">
+        <img src="{{ url_for('static', filename='images/apurva.png') }}" alt="Apurva Amrutkar">
+        <h3>Apurva Amrutkar</h3>
+     
+        <p><i class="fa-solid fa-envelope"></i> apurva.amrutkar@email.com</p>
+      </div>
+
+      <div class="team-card">
+        <img src="{{ url_for('static', filename='images/lakshmi.png') }}" alt="Lakshmi Priya">
+        <h3>Lakshmi Priya</h3>
+    
+        <p><i class="fa-solid fa-envelope"></i> lakshmipriya@email.com</p>
+      </div>
+       <div class="team-card">
+        <img src="{{ url_for('static', filename='images/anchal.jpg') }}" alt="Anchal Patil">
+        <h3>Anchal patil</h3>
+     
+        <p><i class="fa-solid fa-envelope"></i> anchal@email.com</p>
+      </div>
+       <div class="team-card">
+        <img src="{{ url_for('static', filename='images/Sriprada.png') }}" alt="Sriprada">
+        <h3>Sriprada</h3>
+
+        <p><i class="fa-solid fa-envelope"></i> sriprada@email.com</p>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    © 2025 <b>AI Disaster Relief and Rescue System</b> | Powered by Deep Learning 🔥🌊
+  </footer>
+  <button class="chatbot-button" id="chatbot-btn"><i class="fa-solid fa-robot"></i></button>
+  <div class="chat-window" id="chat-window">
+    <div class="chat-header">Ask DisasterBot 🤖</div>
+    <div class="chat-messages" id="chat-messages">
+      <div class="bot-message">Hello! Need help understanding the system?</div>
+    </div>
+    <div class="chat-input">
+      <input type="text" id="user-input" placeholder="Type your message..." />
+      <button id="send-btn">Send</button>
+    </div>
+  </div>
+
+  <script>
+    const chatbotBtn=document.getElementById("chatbot-btn");
+    const chatWindow=document.getElementById("chat-window");
+    const messages=document.getElementById("chat-messages");
+    const userInput=document.getElementById("user-input");
+    const sendBtn=document.getElementById("send-btn");
+
+    chatbotBtn.addEventListener("click",()=>{chatWindow.style.display=chatWindow.style.display==="flex"?"none":"flex";});
+    sendBtn.addEventListener("click",()=>{
+      const text=userInput.value.trim();
+      if(text==="")return;
+      const userMsg=document.createElement("div");
+      userMsg.className="user-message";userMsg.innerText=text;messages.appendChild(userMsg);
+      const botMsg=document.createElement("div");botMsg.className="bot-message";
+      if(text.toLowerCase().includes("how"))
+        botMsg.innerText="Our AI model analyzes live video to detect disasters instantly!";
+      else botMsg.innerText="Try asking: 'how it works' or 'who built this'.";
+      messages.appendChild(botMsg);
+      messages.scrollTop=messages.scrollHeight;userInput.value="";
+    });
+  </script>
+</body>
+</html>
