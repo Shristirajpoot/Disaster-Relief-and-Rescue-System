@@ -1,0 +1,5 @@
+.idea/
+uno/__pycache__/
+uno/views/__pycache__/
+venv/
+output/
