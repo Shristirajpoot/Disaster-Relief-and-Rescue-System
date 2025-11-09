@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Prediction Result</title>
+  <style>
+    body { font-family: 'Poppins', sans-serif; background: #f8f9fa; text-align: center; }
+    h2 { color: #333; margin-top: 20px; }
+    video { margin-top: 20px; border-radius: 12px; width: 70%; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+    a { display: inline-block; margin-top: 20px; text-decoration: none; color: #fff;
+        background: #007bff; padding: 10px 20px; border-radius: 8px; }
+    a:hover { background: #0056b3; }
+  </style>
+</head>
+<body>
+  <h2>Prediction Output</h2>
+  <video controls autoplay loop>
+    <source src="{{ video }}" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+  <br>
+  <a href="/">← Back to Home</a>
+</body>
+</html>
