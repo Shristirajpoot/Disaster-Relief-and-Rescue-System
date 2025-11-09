@@ -1,0 +1,538 @@
+{% extends 'flood/base.html' %}
+{% load static %}
+
+{% block title %}DRAMS{% endblock title %}
+
+{% block css %}
+    <style>
+        #map {
+            width: 100%;
+            min-height: 565px;
+        }
+        #mbb {
+            display: none;
+        }
+        .card-body {
+            padding: 0 0.5rem;
+        }
+        .msgbtn {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+        }
+    </style>
+{% endblock css %}
+
+{% block pagetitle %}Relief{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-xl-2 col-lg-2 p-0">
+            <div class="col-xl-12 col-md-12 mb-4">
+                <div class="card border-left-danger shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="font-weight-bold text-danger text-uppercase mb-1">Time</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800" id="time">00:00:00</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-12 col-md-12 mb-4 mt-4">
+                <div class="card border-left-primary shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="font-weight-bold text-primary text-uppercase mb-1">Fire Stations</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800" id="fs">--</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-12 col-md-12 mb-4 mt-4">
+                <div class="card border-left-secondary shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="font-weight-bold text-secondary text-uppercase mb-1">Severity</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800" id="sev">--</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-12 col-md-12 mb-4 mt-4">
+                <div class="card border-left-info shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="font-weight-bold text-info text-uppercase mb-1">High Risk Area</div>
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col-auto">
+                                        <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800" id="hra">--</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-12 col-md-12 mb-4 mt-4">
+                <div class="card border-left-warning shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="font-weight-bold text-warning text-uppercase mb-1">No. of Vehicles</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800" id="n">--</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-12 col-md-12 mb-4 mt-4">
+                <div class="card border-left-success shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="font-weight-bold text-success text-uppercase mb-1">Est. Population</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800" id="ep">--</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-10 col-lg-10">
+            <div class="card shadow mb-4">
+                <div id="map" class="card-body">
+                    <br><br><br><br><br><br><br><br><br><br>
+                    <div id="textdisplay" style="font-weight: 400; font-size: 2rem; text-align: center"></div>
+                </div>
+                <a id="mbb" class="btn btn-primary msgbtn" style="border-radius: 50px; font-size: 1.35rem; width: 180px; height: 3.5rem; color: #fff; text-align: left; background-color: #2e59d9 !important;">
+                     <span style="position:relative; top: 5px">Send Relief</span>
+                 </a>
+                <a id="mbs" class="btn btn-primary btn-circle btn-lg msgbtn shadow" style="color: #fff;">
+                    <i class="fas fa-paper-plane"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+
+{% block modals %}
+{% endblock %}
+
+{% block script %}
+    <script>
+        $("#mbs").hover(function() {
+            $("#mbb").css("display", "block");
+        }, function() {
+            $("#mbb").css("display", "none");
+        });
+    </script>
+    <script>
+        var path_json, colour, bus_stops, map, bounds, bus_markers, busstop_markers, customer_markers, polylines, path, counter, speed, path_count, finished, alldone, timer, bus_stops_pos, bs_passed, halt, start_time, infowindow, haltcounter;
+
+        function updateParameters(par) {
+            for (var i = 0; i < par.length; i++) {
+                var d = par[i];
+                $("#"+d[0]).html(d[1]);
+            }
+        }
+
+        function initMap(data) {
+
+            updateParameters(data.par);
+
+            // Initialize variables
+            start_time = data.st;
+            bus_stops_pos = [];
+            bs_passed = [];
+            alldone = true;
+            halt = [];
+            haltcounter = [];
+            bus_markers = [];
+            busstop_markers = [];
+            customer_markers = [];
+            path = [];
+            polylines = [];
+            speed = [];
+            path_count = [];
+            finished = [];
+            counter = 0;
+            path_json = data.routes;
+            colour = data.colours;
+            bus_stops = data.busstops;
+
+            // Bounds to display map in the specific region
+            bounds = new google.maps.LatLngBounds();
+
+            map = new google.maps.Map(document.getElementById('map'),{
+                zoom: 13,
+                center: {
+                    lat: 12.9,
+                    lng: 77.6
+                },
+                styles: [{
+                    featureType: 'administrative',
+                    "elementType": 'labels',
+                    "stylers": [{
+                        "visibility": "off"
+                    }]
+                }, {
+                    featureType: 'poi',
+                    "stylers": [{
+                        "visibility": "off"
+                    }]
+                }, {
+                    featureType: 'transit',
+                    "stylers": [{
+                        "visibility": "off"
+                    }]
+                }, {
+                    featureType: 'water',
+                    elementType: 'labels.text.fill',
+                    "stylers": [{
+                        "visibility": "off"
+                    }]
+                }, {
+                    featureType: 'water',
+                    elementType: 'labels.text.stroke',
+                    "stylers": [{
+                        "visibility": "off"
+                    }]
+                }]
+            });
+
+            infowindow = new google.maps.InfoWindow();
+
+            function get_contentinfo(name, noc, reachtime) {
+                var contentinfo = '<p><span style="font-weight: bold;">' + name + '</span><br>';
+                if (noc != "")
+                    contentinfo += 'Number of people: ' + noc + '<br>';
+                contentinfo += 'Status: ';
+                if (reachtime == "")
+                    contentinfo += 'Not yet reached</p>';
+                else
+                    contentinfo += 'Reached at ' + reachtime + '</p>';
+                return contentinfo;
+            }
+
+            function toggle_infowindow(marker, open) {
+                for (var xy = 0; xy < bus_stops.length; xy++) {
+                    if (Math.round(bus_stops[xy].coordinates[1] * Math.pow(10, 7)) == Math.round(marker.getPosition().lat() * Math.pow(10, 7)) && Math.round(bus_stops[xy].coordinates[0] * Math.pow(10, 7)) == Math.round(marker.getPosition().lng() * Math.pow(10, 7)))
+                        break;
+                }
+                if (open) {
+                    infowindow.setContent(get_contentinfo(bus_stops[xy].name, bus_stops[xy].noc, bus_stops[xy].rtime));
+                    infowindow.open(map, marker);
+                } else {
+                    infowindow.close();
+                }
+            }
+
+            // Display office/depot marker
+            var depot_marker = new google.maps.Marker({
+                position: {
+                    lng: data.depot.coordinates[0],
+                    lat: data.depot.coordinates[1]
+                },
+                map: map,
+                icon: {
+                    url: "{% static 'img/office.png' %}",
+                    scaledSize: new google.maps.Size(25,25),
+                },
+                title: data.depot.name,
+                zIndex: 20
+            });
+
+            bounds.extend(depot_marker.getPosition());
+
+            // Display bus stops
+
+            for (var ii = 0; ii < bus_stops.length; ii++) {
+                busstop_markers.push(new google.maps.Marker({
+                    position: {
+                        lng: bus_stops[ii].coordinates[0],
+                        lat: bus_stops[ii].coordinates[1]
+                    },
+                    icon: {
+                        url: "{% static 'img/bs.png' %}",
+                        scaledSize: new google.maps.Size(23,30),
+                    },
+                    animation: google.maps.Animation.DROP
+                }));
+
+                busstop_markers[ii].addListener('mouseover', function() {
+                    toggle_infowindow(this, true);
+                });
+
+                busstop_markers[ii].addListener('mouseout', function() {
+                    toggle_infowindow(this, false);
+                });
+
+                busstop_markers[ii].setMap(map);
+                bounds.extend(busstop_markers[ii].getPosition());
+            }
+
+            // Fitting the map to the bounds
+            map.fitBounds(bounds);
+
+            function convertSecToTimeString(secs) {
+                var sec = (start_time + secs) * 2;
+                var hr = Math.floor(sec / 3600);
+                var min = Math.floor((sec - hr * 3600) / 60);
+                sec = Math.round(sec - min * 60 - hr * 3600);
+                if (hr < 10)
+                    hh = "0" + hr;
+                else
+                    hh = hr;
+                if (min < 10)
+                    mm = "0" + min;
+                else
+                    mm = min;
+                if (sec < 10)
+                    ss = "0" + sec;
+                else
+                    ss = sec;
+
+                return hh + ":" + mm + ":" + ss;
+            }
+
+            function updateTime(count) {
+
+                document.getElementById("time").innerHTML = convertSecToTimeString(count);
+
+                counter += 1;
+
+                // Checks all the bus routes and terminates the program
+                for (var xx = 0; xx < path_json.length; xx++) {
+                    if (xx == path_json.length - 1 && finished[xx])
+                        alldone = true;
+                    else {
+                        if (!finished[xx])
+                            break;
+                    }
+                }
+            }
+
+            function changeMarkerPosition(xx) {
+                var mrkr = bus_markers[xx];
+                var path_ = path[xx];
+                var current = mrkr.getPosition();
+                var spd = speed[xx][0];
+
+                // Check if the marker crossed any of the bus stop in the route and exchane passengers
+                if (bus_stops_pos[xx].length > 0) {
+                    if (path_count[xx] > bus_stops_pos[xx][bs_passed[xx]]) {
+                        bs_passed[xx] += 1;
+                        // Exchange passengers
+                        var bsbs = []
+                          , count = 0;
+                        for (var xy = 0; xy < bus_stops.length && count < bs_passed[xx]; xy++) {
+                            if (bus_stops[xy].route == xx) {
+                                bsbs.push(xy);
+                                count += 1;
+                            }
+                        }
+                        //var ind = bsbs[bs_passed[xx]-1];
+                        //console.log(xy-1);
+
+                        halt[xx] = true;
+                        haltcounter[xx] = counter;
+
+                        bus_stops[xy - 1].noc = "";
+                        bus_stops[xy - 1].rtime = convertSecToTimeString(counter);
+                    }
+                }
+
+                if (path_count[xx] < path_.length) {
+                    var frac, latlng, min_dist;
+                    var dist = google.maps.geometry.spherical.computeDistanceBetween(path_[path_count[xx]], current);
+                    if (dist > spd) {
+                        frac = Math.round(spd) / dist;
+                        latlng = google.maps.geometry.spherical.interpolate(current, path_[path_count[xx]], frac);
+                    } else {
+                        for (var x = path_count[xx] + 1; x < path_.length && dist < spd; x++) {
+                            min_dist = dist;
+                            dist += google.maps.geometry.spherical.computeDistanceBetween(path_[x], path_[x - 1]);
+                            path_count[xx] = x;
+                        }
+                        frac = (spd - min_dist) / (dist - min_dist);
+                        latlng = google.maps.geometry.spherical.interpolate(path_[path_count[xx] - 1], path_[path_count[xx]], frac);
+                    }
+                    mrkr.setPosition(latlng);
+                }
+                if (path_count[xx] >= path_.length - 1) {
+                    mrkr.setPosition(path_[path_.length - 1]);
+                    mrkr.setVisible(false);
+                    finished[xx] = true;
+                }
+            }
+
+            // Loop over the routes to display them
+            for (var xx = 0; xx < path_json.length; xx++) {
+
+                path_count.push(1);
+                finished.push(false);
+                bs_passed.push(0);
+                halt.push(false);
+
+                polylines.push(new google.maps.Polyline({
+                    path: [],
+                    strokeColor: colour[xx],
+                    strokeOpacity: 1,
+                    strokeWeight: 3,
+                    fillColor: colour[xx],
+                    fillOpacity: 0.35,
+                    zIndex: 2
+                }));
+
+                var _polyline = polylines[xx];
+
+                _polyline.addListener('mouseover', function() {
+                    this.setOptions({
+                        strokeWeight: 5,
+                        zIndex: 5
+                    });
+                });
+
+                _polyline.addListener('mouseout', function() {
+                    this.setOptions({
+                        strokeWeight: 3,
+                        zIndex: 2
+                    });
+                });
+
+                var ind = [];
+                var speeed = [];
+                var legs = path_json[xx].routes[0].legs;
+                for (var i = 0; i < legs.length; i++) {
+                    var steps = legs[i].steps;
+                    //speed.push([2*legs[i].distance.value/legs[i].duration.value]);
+                    //speeed += 2*legs[i].distance.value/legs[i].duration.value;
+                    speeed.push(2 * legs[i].distance.value / legs[i].duration.value);
+                    for (var j = 0; j < steps.length; j++) {
+                        var enc_pol = steps[j].polyline.points;
+                        var nextSegment = google.maps.geometry.encoding.decodePath(enc_pol);
+                        for (var k = 0; k < nextSegment.length; k++) {
+                            _polyline.getPath().push(nextSegment[k]);
+                        }
+                    }
+                    if (path_json[xx].bus_stops.length > 0 && i < legs.length - 1) {
+                        var bsc = new google.maps.LatLng({
+                            lng: path_json[xx].bus_stops[i].coordinates[0],
+                            lat: path_json[xx].bus_stops[i].coordinates[1]
+                        });
+                        ind.push(_polyline.getPath().length);
+                        _polyline.getPath().push(bsc);
+                    }
+                }
+
+                bus_stops_pos.push(ind);
+                //speed.push(speeed/legs.length);
+                speed.push(speeed);
+
+                var _path = _polyline.getPath().getArray();
+                path.push(_path);
+
+                var _bus_marker = new google.maps.Marker({
+                    position: {
+                        lat: _path[0].lat(),
+                        lng: _path[0].lng()
+                    },
+                    icon: {
+                        // url: "static/img/bus" + (xx + 1) + ".png",
+                        url: "/static/img/fire-truck.png",
+                        scaledSize: new google.maps.Size(20,20)
+                    },
+                    //label: ''+(xx+1),
+                    title: 'Fire Brigade ' + (xx + 1),
+                    zIndex: 10,
+                });
+
+                bus_markers.push(_bus_marker);
+
+            }
+
+            // Change bus stops colour
+            setTimeout(function() {
+                for (var ii = 0; ii < busstop_markers.length; ii++) {
+                    var marker = busstop_markers[ii];
+                    var icon = {
+                        url: "/static/img/bs" + (bus_stops[ii].route + 1) + ".png",
+                        scaledSize: new google.maps.Size(23,30),
+                    };
+                    marker.setIcon(icon);
+                }
+            }, 1000);
+
+            setTimeout(function() {
+                for (var ii = 0; ii < polylines.length; ii++) {
+                    show = function(polyline, wait) {
+                        setTimeout(function() {
+                            polyline.setMap(map);
+                        }, wait);
+                    }
+                    show(polylines[ii], 500 * ii);
+                }
+
+            }, 3000);
+
+            setTimeout(function() {
+                for (var ii = 0; ii < bus_markers.length; ii++) {
+                    bus_markers[ii].setMap(map);
+                }
+            }, 4000 + polylines.length * 500);
+
+            setTimeout(function() {
+                alldone = false;
+            }, 4000 + polylines.length * 500);
+
+            setInterval(function() {
+                if (!alldone) {
+                    updateTime(counter);
+                    for (var xx = 0; xx < path_json.length; xx++) {
+                        if (!finished[xx]) {
+                            if (!halt[xx])
+                                changeMarkerPosition(xx);
+                            else {
+                                if (counter - haltcounter[xx] > 10)
+                                    halt[xx] = false;
+                            }
+                        }
+                    }
+                }
+            }, 10);
+
+        }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDeBKPe6snSckM7qYsFR_Yox7TLen6BXuE&libraries=geometry" async defer></script>
+    <script>
+        $("#mbs").click(function() {
+            $(this).css("display", "none");
+            $("#textdisplay").html("PLEASE WAIT, FINDING ROUTES ...");
+            $.ajax({
+                url: "{% url 'routesolve' instance %}",
+                type: 'GET',
+                data: {'demo': true},
+                cache: false,
+                processData: false,
+                contentType: false,
+                success: function(data) {
+                    if (data["status"] == "OK") {
+                        $("#map").html("");
+                        initMap(data);
+                    } else if (data["status"] == "c") {
+                        $("#textdisplay").html("FEW CONSTRAINTS MISSING");
+                    } else if (data["status"] == "se") {
+                        $("#textdisplay").html("SOMETHING WENT WRONG :(<br>TRY AGAIN");
+                    }
+                }
+            });
+        });
+    </script>
+{% endblock script %}

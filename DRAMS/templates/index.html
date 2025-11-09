@@ -1,0 +1,205 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link rel="icon" href="{% static 'img/favicon.png' %}" type="image/png">
+        <title>{% block title %}DRAMS{% endblock title %}</title>
+        <!-- Custom fonts for this template-->
+        <script src="https://kit.fontawesome.com/1cc5ac35f0.js" crossorigin="anonymous"></script>
+        <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+        <!-- Custom styles for this template-->
+        <link href="{% static 'css/sb-admin-2.css' %}" rel="stylesheet">
+        <style>
+            body {
+                background-color: #e6ebff;
+            }
+            #logo {
+                width: 15vw;
+                margin-right: 50px;
+                position: relative;
+                top: -3vw;
+            }
+
+            #header {
+                font-weight: bold;
+                color: rgb(50,56,80);
+                font-size: 10vw;
+            }
+
+            #name {
+                color: rgb(50,56,80);
+                font-weight: bold;
+                font-size: 4vw;
+                position: relative;
+                top: -1vw;
+            }
+
+            #name span {
+                color: #5a5c69;
+                font-size: 3vw;
+            }
+
+            #cs {
+                color: #fff;
+                margin: auto;
+                font-size: 2vw;
+                margin-top: 120px;
+                border-radius: 100px;
+                width: 300px;
+            }
+
+            .portfolio-item {
+                display: block;
+                position: relative;
+                overflow: hidden;
+                max-width: 530px;
+                margin: auto auto 1rem;
+                border-radius: 10px;
+            }
+
+            .portfolio-item .caption {
+                height: 100%;
+                width: 100%;
+                background-color: rgba(78, 115, 223, 0.6);
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                z-index: 1;
+            }
+
+            .portfolio-item .caption .caption-content {
+                color: #fff;
+                margin: auto 2rem 2rem;
+            }
+
+            .portfolio-item .caption .caption-content .h2 {
+                font-size: 1.5rem;
+                font-weight: bold;
+                text-transform: uppercase;
+            }
+
+            @media (min-width: 992px) {
+                .portfolio-item {
+                    max-width: none;
+                    margin: auto;
+                    border-radius: 10px;
+                }
+
+                .portfolio-item .caption {
+                    transition: background-color 0.7s, -webkit-clip-path 0.25s ease-out;
+                    transition: clip-path 0.25s ease-out, background-color 0.7s;
+                    transition: clip-path 0.25s ease-out, background-color 0.7s, -webkit-clip-path 0.25s ease-out;
+                    -webkit-clip-path: inset(0px);
+                    clip-path: inset(0px);
+                }
+
+                .portfolio-item .caption .caption-content {
+                    transition: opacity 0.25s;
+                    margin: 4.5rem 2rem;
+                }
+
+                .portfolio-item img {
+                    transition: -webkit-clip-path 0.25s ease-out;
+                    transition: clip-path 0.25s ease-out;
+                    transition: clip-path 0.25s ease-out, -webkit-clip-path 0.25s ease-out;
+                    -webkit-clip-path: inset(-1px);
+                    clip-path: inset(-1px);
+                }
+
+                .portfolio-item:hover img {
+                    -webkit-clip-path: inset(1rem);
+                    clip-path: inset(1rem);
+                }
+
+                .portfolio-item:hover .caption {
+                    background-color: rgba(78, 115, 223, 0.7);
+                    -webkit-clip-path: inset(1rem);
+                    clip-path: inset(1rem);
+                }
+            }
+
+            #choices {
+                display: none;
+            }
+
+            .desc {
+                background-color: #32479C;
+                color: white;
+                padding: 20px 0;
+                border-radius: 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-12 text-center text-uppercase">
+                    <img src="{% static 'img/logo.png' %}" id="logo"><span id="header">DRAMS</span><br>
+                    <div id="name" style="line-height: 1">D<span>isaster</span> R<span>elief</span> A<span>nd</span> M<span>anagement</span> S<span>ystem</span></div>
+                </div>
+            </div>
+
+            <div class="row mt-4 text-center desc">
+                <div class="col-lg-12">
+                    <p style="margin-bottom: 0; font-size: 1.25rem">
+                        This is an integrated platform designed to use Artificial Intelligence-based models in Smart Cities to improve decision making processes and to make relief measures more proactive, efficient and streamlined in times of crisis.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="row">
+                <a id="cs" class="btn btn-primary">Launch Instance</a>
+            </div>
+            <div class="row" id="choices" style="margin-top: 50px;">
+                <div class="col-lg-3" style="margin-left: 12.5%">
+                    <a class="portfolio-item" href="{% url 'detect' instance='flood' %}">
+                        <div class="caption">
+                            <div class="caption-content text-center">
+                                <div class="h2">FLASH FLOOD</div>
+                            </div>
+                        </div>
+                        <img class="img-fluid" src="{% static 'img/flood.jpg' %}" alt="flood">
+                    </a>
+                </div>
+                <div class="col-lg-3">
+                    <a class="portfolio-item" href="{% url 'detect' instance='fire' %}">
+                        <div class="caption">
+                            <div class="caption-content text-center">
+                                <div class="h2">CITY FIRE</div>
+                            </div>
+                        </div>
+                        <img class="img-fluid" src="{% static 'img/fire.jpg' %}" alt="fire">
+                    </a>
+                </div>
+                <div class="col-lg-3">
+                    <a class="portfolio-item" href="{% url 'detect' instance='covid' %}">
+                        <div class="caption">
+                            <div class="caption-content text-center">
+                                <div class="h2">COVID CROWDING</div>
+                            </div>
+                        </div>
+                        <img class="img-fluid" src="{% static 'img/covid.jpg' %}" alt="covid">
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bootstrap core JavaScript-->
+        <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
+        <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+        <!-- Core plugin JavaScript-->
+        <script src="{% static 'vendor/jquery-easing/jquery.easing.min.js' %}"></script>
+        <!-- Custom scripts for all pages-->
+        <script src="{% static 'js/sb-admin-2.min.js' %}"></script>
+        <script>
+            $("#cs").click(function () {
+                $(this).css('display', 'none');
+                $("#choices").css("display", "flex").hide().fadeIn("slow");
+            });
+        </script>
+    </body>
+</html>

@@ -1,0 +1,202 @@
+{% extends 'flood/base.html' %}
+{% load static %}
+
+{% block title %}DRAMS{% endblock title %}
+
+{% block css %}
+    <style>
+        .msgbtn {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+        }
+        #mbb {
+            display: none;
+        }
+        tbody tr:hover {
+            background-color: #eee;
+            cursor: pointer;
+        }
+        label {
+            font-weight: bold;
+        }
+
+        .selected {
+            background-color: lightgreen !important;
+            font-weight: bold;
+        }
+    </style>
+{% endblock css %}
+
+{% block pagetitle %}Alert{% endblock %}
+
+{% block content %}
+    {% if al is None %}
+        <div class="card shadow mb-4">
+            <div class="card-body">
+                No data available.
+            </div>
+        </div>
+    {% else %}
+        <div class="card shadow mb-4">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="dataTable">
+                        <thead>
+                            <tr>
+                                <th>Geography</th>
+                                <th>Severity</th>
+                                <th>Population</th>
+                                <th>Nearest Nodal Center</th>
+                                <th>Alert Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for p in al %}
+                                <tr class="locr">
+                                    <td>{{ p.geography }}</td>
+                                    <td>{{ p.get_severity_display }}</td>
+                                    <td>{{ p.population }}</td>
+                                    <td>{{ p.nodal_center }} &nbsp <i class="ncc fas fa-{{ p.nc_category }}" data-container="body" data-toggle="popover" data-placement="top" data-content="{{ p.get_nc_category_display }}"></i></td>
+                                    <td>Not Sent</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+         <a id="mbb" class="btn btn-primary msgbtn" style="border-radius: 50px; font-size: 1.35rem; width: 180px; height: 3.5rem; color: #fff; text-align: left; background-color: #2e59d9 !important;">
+             <span style="position:relative; top: 5px">Send Alert</span>
+         </a>
+        <a id="mbs" class="btn btn-primary btn-circle btn-lg msgbtn shadow" style="color: #fff;" data-toggle="modal" data-target="#message">
+            <i class="fas fa-exclamation-triangle"></i>
+        </a>
+    {% endif %}
+{% endblock content %}
+
+{% block modals %}
+    <div class="modal fade" id="message" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Alert Message</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="messageform" action="{% url 'send_alert' %}">
+                    <div class="modal-body">
+                        <div class="form-group row">
+                            <label for="subject" class="col-sm-2 col-form-label">Subject</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="subject" value="EMERGENCY ALERT! Fire Warning">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="msgbody">Message</label>
+                            <textarea class="form-control" id="msgbody" value="Message" rows="10" style="resize: none;">
+Fire has been detected in your vicinity. Emergency services have been deployed. Kindly move to a safer area.
+For any assistance please call - 9876543210
+                            </textarea>
+                        </div>
+                        <div class="form-group row">
+                            <label for="subject" class="col-sm-2 col-form-label">Medium</label>
+                            <div class="col-sm-10">
+                                <div class="form-group" style="position: relative; top: 7px;">
+                                    <div class="form-check form-check-inline">
+                                      <input class="form-check-input" type="checkbox" id="emailc" value="email">
+                                      <label class="form-check-label" for="emailc" style="font-weight: normal">
+                                          <i class="fas fa-envelope ml-2"></i>
+                                          Email
+                                      </label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                      <input class="form-check-input" type="checkbox" id="smsc" value="sms">
+                                      <label class="form-check-label" for="smsc" style="font-weight: normal">
+                                          <i class="fas fa-sms ml-2"></i>
+                                          SMS
+                                      </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Send</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'vendor/datatables/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'vendor/datatables/dataTables.bootstrap4.min.js' %}"></script>
+    <script>
+        $(document).ready(function() {
+          $('#dataTable').DataTable();
+        });
+        $(function () {
+            $('.ncc').popover({
+              container: 'body',
+              trigger: 'hover'
+            })
+        });
+        $("#mbs").hover(function() {
+            $("#mbb").css("display", "block");
+        }, function() {
+            $("#mbb").css("display", "none");
+        });
+
+        $(".locr").click(function () {
+            $(this).toggleClass("selected");
+        });
+    </script>
+    <script>
+
+        $("#messageform").submit(function(event) {
+          event.preventDefault();
+          var form = $(this), url = form.attr('action');
+
+          var med = "";
+          var cc = true;
+          if ($("#emailc").prop("checked") === true) {
+            med += "e";
+            cc = false;
+        }
+          if ($("#smsc").prop("checked") === true) {
+            med += "s";
+            cc = false;
+        }
+          if (cc) {
+              alert("Select at least one medium of message");
+              return false;
+          }
+          var data = {"subject": $("#subject").val(), "body": $("#msgbody").val(), "med": med};
+          $.ajax({
+                type: "POST",
+                url: url,
+                data: data,
+                contentType: "application/x-www-form-urlencoded",
+                success: function(responseData, textStatus, jqXHR) {
+                    console.log("success");
+                    $('#message').modal('toggle');
+                    var sel = document.getElementsByClassName("selected");
+                    var cols, col;
+                    for (var i = 0; i < sel.length; i++) {
+                        cols = sel[i].getElementsByTagName("td");
+                        col = cols[cols.length - 1];
+                        col.innerHTML = "Sent";
+                    }
+                    $(".selected").toggleClass("selected");
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.log(errorThrown);
+                }
+            });
+        });
+    </script>
+{% endblock script %}

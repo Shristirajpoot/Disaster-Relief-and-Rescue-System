@@ -1,0 +1,255 @@
+{% extends 'flood/base.html' %}
+{% load static %}
+
+{% block title %}DRAMS{% endblock title %}
+
+{% block css %}
+    <style>
+        .vid {
+            padding: 0.5rem;
+        }
+        #monitor {
+            display: none;
+        }
+        label {
+            font-weight: bold;
+        }
+        .nodes {
+            display: none;
+            margin-left: 30px;
+            font-size: 1.5rem;
+        }
+
+        .embed-responsive-4by3::before {
+            padding-top: 0;
+        }
+
+        .safe {
+            border: 5px solid green;
+        }
+
+        .disaster {
+            border: 5px solid red;
+        }
+    </style>
+{% endblock css %}
+
+{% block pagetitle %}Detect{% endblock %}
+
+{% block content %}
+    {% if cn is not None %}
+        <div class="card shadow mb-4">
+            <div class="card-body">
+                No data to display.
+            </div>
+        </div>
+    {% else %}
+    <div class="row">
+        <div class="col-lg-3">
+            <div class="form-group row">
+                <label for="loc" class="col-sm-3 col-form-label">Location</label>
+                <div class="col-sm-9">
+                    <select class="form-control" id="loc" name="location">
+                        <option value="0">Select</option>
+                        {% for city in cities %}
+                        <option value="{{ city.id }}">{{ city.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-9" style="text-align: right">
+            <div class="nodes">
+                <i class="nodesinfo fas fa-bullseye" data-container="body" data-toggle="popover" data-placement="top" data-content="Number of nodes"></i> : <span id="totalnodes"></span>
+            </div>
+            <div class="nodes">
+                <i class="nodesinfo fas fa-dot-circle" data-container="body" data-toggle="popover" data-placement="top" data-content="Number of live nodes"></i> : <span id="livenodes"></span>
+            </div>
+            <div class="nodes">
+                <i class="nodesinfo far fa-dot-circle" data-container="body" data-toggle="popover" data-placement="top" data-content="Number of dead nodes"></i> : <span id="deadnodes"></span>
+            </div>
+        </div>
+    </div>
+    <div class="row" id="monitor">
+        <div class="col-lg-6">
+            <div class="row">
+                {% for vid in '1234'|make_list %}
+                <div class="col-md-6 vid">
+                    <div class="embed-responsive embed-responsive-4by3">
+                        <img class="vids safe" id="vid{{ vid }}" alt="feed{{ vid }}" style="max-width: 100%;">
+                    </div>
+                    <div class="text-center font-weight-bold sevs">
+                        Severity: 0.0
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="col-lg-6 h-100">
+            <div id="map" style="width: 100%; min-height: 500px;"></div>
+        </div>
+    </div>
+{#    <a id="mbs" class="btn btn-primary btn-circle btn-lg msgbtn shadow" style="color: #fff;" data-toggle="modal" data-target="#sendalert">#}
+{#        <i class="fas fa-exclamation-triangle"></i>#}
+{#    </a>#}
+    {% endif %}
+{% endblock content %}
+
+{% block modals %}
+    <div class="modal fade" id="sendalert" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-body text-center">
+                    <h3 class="modal-title">Flood Detected!</h3><br>
+                    <a href="{% url 'alert' instance %}" class="btn btn-primary mr-3">Go to Alert</a>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script>
+        var node_markers = [], node_points = [], firecircle, map;
+        var sev = 0, cctv, cctv2;
+
+        function initMap(data) {
+            var lat = data["lat"], lng = data["lng"];
+            map = new google.maps.Map(document.getElementById('map'),{
+                zoom: 11,
+                center: {
+                    lat: lat,
+                    lng: lng,
+                }
+            });
+
+            var bounds = new google.maps.LatLngBounds();
+
+            cctv = {
+              url: "/static/img/cctv.png",
+              origin: new google.maps.Point(0, 0),
+              anchor: new google.maps.Point(15, 15),
+              scaledSize: new google.maps.Size(30, 30)
+            };
+
+            cctv2 = {
+              url: "/static/img/cctv2.png",
+              origin: new google.maps.Point(0, 0),
+              anchor: new google.maps.Point(15, 15),
+              scaledSize: new google.maps.Size(30, 30)
+            };
+
+            var nodes = data["nodes"];
+            for (var i = 0; i < nodes.length; i++) {
+                var node = nodes[i];
+                node_points.push({"name": node.name, "coordinates": node.coordinates})
+            }
+
+            for (var ii = 0; ii < node_points.length; ii++) {
+                node_markers.push(new google.maps.Marker({
+                    position: {
+                        lng: parseFloat(node_points[ii].coordinates[1]),
+                        lat: parseFloat(node_points[ii].coordinates[0])
+                    },
+                    map: map,
+                    icon: cctv,
+                    title: node_points[ii].name
+                }));
+                bounds.extend(node_markers[ii].getPosition());
+            }
+
+            // Fitting the map to the bounds
+            map.fitBounds(bounds);
+
+            firecircle = new google.maps.Circle({
+                strokeColor: "#FF0000",
+                strokeOpacity: 0.8,
+                strokeWeight: 2,
+                fillColor: "#FF0000",
+                fillOpacity: 0.35,
+                map,
+                center: node_markers[1].getPosition(),
+                radius: 0
+              });
+
+            firecircle.setMap(map);
+        }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDeBKPe6snSckM7qYsFR_Yox7TLen6BXuE&libraries=geometry" async defer></script>
+    <script>
+        var cid = "0";
+        function initiateVideos(nodes) {
+            for (var i = 0; i < nodes.length; i++) {
+                var node = nodes[i], vid = parseInt(node.cctvurl);
+                var vidurl = "{% url 'video_feed' instance=instance vid=98654 %}".replace(/98654/, vid);
+                $("#vid"+(i+1)).attr("src",vidurl);
+            }
+            document.getElementsByClassName("sevs")[1].innerHTML = "Severity: <span id=\"vio\">0</span>";
+        }
+        $("#loc").on('change', function() {
+            cid = $(this).val();
+            var data = {"cid": cid};
+            if (cid !== "0") {
+                $.ajax({
+                    url: "{% url 'get_coordinates' %}",
+                    type: 'POST',
+                    data: data,
+                    cache: false,
+                    dataType: 'json',
+                    success: function(data) {
+                        initMap(data);
+                        $("#totalnodes").html(data["tot"]);
+                        $("#livenodes").html(data["live"]);
+                        $("#deadnodes").html(data["tot"]-data["live"]);
+                        initiateVideos(data["nodes"]);
+                        $("#monitor").css("display", "flex");
+                        $(".nodes").css("display", "inline-block");
+                    }
+                });
+
+            }
+            else {
+                $("#monitor").css("display", "none");
+                $(".nodes").css("display", "none");
+            }
+        });
+    </script>
+    <script>
+        $(function () {
+            $('.nodesinfo').popover({
+              container: 'body',
+              trigger: 'hover'
+            })
+        });
+        var modalflag = true;
+        setInterval(function(){
+            if (cid !== "0") {
+                var data = {"cid": cid};
+                $.ajax({
+                    url: "{% url 'check_fire_status' %}",
+                    type: 'POST',
+                    data: data,
+                    cache: false,
+                    dataType: 'json',
+                    success: function(data) {
+                        sev = data["sev"];
+                        $("#vio").html(sev);
+                        if (sev > 0.5) {
+                            $("#vid2").removeClass("safe").addClass("disaster");
+                            var marker = node_markers[1];
+                            marker.setIcon(cctv2);
+                            firecircle.setRadius(sev*700);
+                        }
+                        else {
+                            $("#vid2").removeClass("disaster").addClass("safe");
+                            marker = node_markers[1];
+                            marker.setIcon(cctv);
+                            firecircle.setRadius(0);
+                        }
+                    }
+                });
+            }
+        }, 1000);
+    </script>
+{% endblock script %}

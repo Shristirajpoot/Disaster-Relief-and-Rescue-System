@@ -1,0 +1,77 @@
+{% extends 'covid/base.html' %}
+{% load static %}
+
+{% block title %}DRAMS{% endblock title %}
+
+{% block css %}
+    <style>
+        .feedback {
+            color: white !important;
+        }
+    </style>
+{% endblock css %}
+
+{% block pagetitle %}Feedback{% endblock %}
+
+{% block content %}
+    {% if al is None %}
+        <div class="card shadow mb-4">
+            <div class="card-body">
+                No data to display.
+            </div>
+        </div>
+    {% else %}
+        <div class="card shadow mb-4">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="dataTable">
+                        <thead>
+                            <tr>
+                                <th>Geography</th>
+                                <th>Severity</th>
+                                <th>Population</th>
+                                <th style="text-align: center">Feedback</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for p in al %}
+                                {% with forloop.counter|stringformat:"i" as id %}
+                                    {% with "rid"|add:id as rid %}
+                                        <tr id="{{ rid }}" class="rids">
+                                            <td>{{ p.geography }}</td>
+                                            <td>{{ p.get_severity_display }}</td>
+                                            <td>{{ p.population }}</td>
+                                            <td style="text-align: center">
+                                                <a class="btn btn-primary feedback" onclick='removerow("{{ rid }}")'>Correct</a>
+                                                <a class="btn btn-danger feedback" onclick='removerow("{{ rid }}")'>Incorrect</a>
+                                            </td>
+                                        </tr>
+                                    {% endwith %}
+                                {% endwith %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock content %}
+
+{% block modals %}
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'vendor/datatables/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'vendor/datatables/dataTables.bootstrap4.min.js' %}"></script>
+    <script>
+        $(document).ready(function() {
+          $('#dataTable').DataTable();
+        });
+        function removerow(rid) {
+            $("#"+rid).remove();
+            if ($('.rids').length === 0) {
+                $('.card-body').html("No data to display.")
+            }
+        }
+    </script>
+{% endblock script %}s
