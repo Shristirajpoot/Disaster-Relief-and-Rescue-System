@@ -1,9 +1,10 @@
-# 🌪️ Disaster-Relief-and-Rescue-System (DRAMS) 🚨  
+  
+# 🌪️ Disaster-Relief-and-Rescue-System (DRAMS) 🚨
 > A real-time disaster detection and rescue system made with ❤️ using Python, OpenCV & AI models 🤖  
 
-![GitHub Repo stars](https://img.shields.io/github/stars/Shristirajpoot/bakery?style=social)
-![GitHub last commit](https://img.shields.io/github/last-commit/Shristirajpoot/bakery?color=brightgreen)
-![Built with](https://img.shields.io/badge/Built%20with-React%20%2B%20TailwindCSS-blue)
+![GitHub Repo stars](https://img.shields.io/github/stars/Shristirajpoot/Disaster-Relief-and-Rescue-System?style=social)
+![GitHub last commit](https://img.shields.io/github/last-commit/Shristirajpoot/Disaster-Relief-and-Rescue-System?color=brightgreen)
+![Built with](https://img.shields.io/badge/Built%20with-Python%20%7C%20OpenCV%20%7C%20DeepLearning-blue)
 
 ---
 
