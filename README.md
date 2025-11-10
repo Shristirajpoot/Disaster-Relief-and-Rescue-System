@@ -58,17 +58,22 @@ Disaster-Relief-and-Rescue-System/
 ## 🖼️ Screenshots
 📸 Real views of DRAMS in action:
 
-| Web Streaming                                      | Fire Alert                                | Flood Alert                              |
-| -------------------------------------------------- | ----------------------------------------- | ---------------------------------------- |
-| ![Stream](./alert_snapshots/stream_screenshot.png) | ![Fire](./alert_snapshots/fire_alert.png) | ![Flood](./alert_snapshots/flood_alert.png) |
+## 🖼️ Screenshots
+📸 **Real Outputs & Model Visualizations from DRAMS (Disaster Relief and Management System)**
 
-| Grad-CAM Visualization                             | Training Loss/Accuracy                     | LR Finder Plot                            |
-| -------------------------------------------------- | ----------------------------------------- | ---------------------------------------- |
-| ![Grad-CAM](./gradcam_fire.jpg)                   | ![Training Plot](./training_plot.png)     | ![LR Find](./lrfind_plot.png)            |
+| Fire Detection (Grad-CAM) | Flood Detection Outputs | Flood Detection Variants |
+| :------------------------: | :---------------------: | :----------------------: |
+| <img src="./gradcam_fire.jpg" width="300"/> | <img src="./flood_output.jpg" width="300"/> | <img src="./flood_output_2.jpg" width="300"/> |
+| <img src="./gradcam_flood.jpg" width="300"/> | <img src="./flood_output_3.jpg" width="300"/> | <img src="./flood_output4.jpg" width="300"/> |
 
-| Color Plot                                        |
-| ------------------------------------------------- |
-| ![Color Plot](./clr_plot.png)                    |
+| Model Training Visuals | LR Finder Curve | Color Plot |
+| :--------------------: | :--------------: | :---------: |
+| <img src="./training_plot.png" width="300"/> | <img src="./lrfind_plot.png" width="300"/> | <img src="./clr_plot.png" width="300"/> |
+
+| Raw Output Frame | Grad-CAM (Alt Frame) |
+| :---------------: | :-----------------: |
+| <img src="./output_0.jpg" width="300"/> | <img src="./gradcam_fire_1761656138.jpg" width="300"/> |
+
 
 ## 🚀 Getting Started
 📦 Install Dependencies
