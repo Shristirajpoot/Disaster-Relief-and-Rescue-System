@@ -58,12 +58,17 @@ Disaster-Relief-and-Rescue-System/
 ## 🖼️ Screenshots
 📸 Real views of DRAMS in action:
 
-| Web Streaming                                      | Fire Alert                                |
-| -------------------------------------------------- | ----------------------------------------- |
-| ![Stream](./alert_snapshots/stream_screenshot.png) | ![Fire](./alert_snapshots/fire_alert.png) |
+| Web Streaming                                      | Fire Alert                                | Flood Alert                              |
+| -------------------------------------------------- | ----------------------------------------- | ---------------------------------------- |
+| ![Stream](./alert_snapshots/stream_screenshot.png) | ![Fire](./alert_snapshots/fire_alert.png) | ![Flood](./alert_snapshots/flood_alert.png) |
 
+| Grad-CAM Visualization                             | Training Loss/Accuracy                     | LR Finder Plot                            |
+| -------------------------------------------------- | ----------------------------------------- | ---------------------------------------- |
+| ![Grad-CAM](./gradcam_fire.jpg)                   | ![Training Plot](./training_plot.png)     | ![LR Find](./lrfind_plot.png)            |
 
-Flood Alert	Grad-CAM Visualization
+| Color Plot                                        |
+| ------------------------------------------------- |
+| ![Color Plot](./clr_plot.png)                    |
 
 ## 🚀 Getting Started
 📦 Install Dependencies
